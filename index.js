@@ -1,6 +1,6 @@
 const fs = require('fs');
 const path = require('path');
-const {uniq, forEach, keyBy} = require('lodash');
+const {uniq, forEach, keyBy, mapValues} = require('lodash');
 const stringifyPackage = require('stringify-package');
 const toposort = require('toposort');
 const detectIndent = require('detect-indent');
@@ -108,35 +108,35 @@ async function initPkgs(pluginConfig, context) {
 }
 
 async function analyzeCommitsAll(pluginConfig, context) {
-  context.pkgContexts.forEach(pkgContext => {
+  const {pkgContexts} = context;
+
+  forEach(pkgContexts, (pkgContext) => {
     if (pkgContext.nextReleaseType) {
-      return false;
+      return;
     }
 
     // Update package version if dependency was updated
     pkgContext.pkg.dependencies.forEach(({name}) => {
-      if (!pkgContext.pkgs[name].nextRelease) {
-        return;
-      }
-
-      if (pkgContext.pkgs[name].nextRelease.type) {
-        pkgContext.nextReleaseType = 'patch';
+      if (pkgContexts[name].nextReleaseType) {
+        pkgContexts[pkgContext.name].nextReleaseType = 'patch';
         return false;
       }
     });
   });
+
+  return mapValues(pkgContexts, 'nextReleaseType');
 }
 
 async function generateNotes(pluginConfig, context) {
-  const {pkg, pkgs} = context;
+  const {pkg, pkgContexts} = context;
 
   let notes = [
     '### Dependencies',
   ];
 
   pkg.dependencies.forEach(({name}) => {
-    if (pkgs[name].nextRelease && pkgs[name].nextRelease.version) {
-      notes.push(`* **${name}:** upgraded to ${pkgs[name].nextRelease.version}`);
+    if (pkgContexts[name].nextRelease && pkgContexts[name].nextRelease.version) {
+      notes.push(`* **${name}:** upgraded to ${pkgContexts[name].nextRelease.version}`);
     }
   });
 
@@ -145,24 +145,24 @@ async function generateNotes(pluginConfig, context) {
 }
 
 async function prepare(pluginConfig, context) {
-  const {cwd, logger, options, pkg, pkgs} = context;
+  const {cwd, logger, options, pkg, pkgs, pkgContexts} = context;
 
   // Update self package version, such as package.json
   forEach(pkg.pkgFiles, pkgFile => {
-    if (pkgFile.version) {
-      pkgFile.version = pkg.nextRelease.version;
+    if (pkgFile.content.version) {
+      pkgFile.content.version = context.nextRelease.version;
     }
   });
 
   // Update dependency versions
   pkg.dependencies.forEach(({file, key, name}) => {
     const {content} = pkg.pkgFiles[file];
-    if (pkgs[name].nextRelease && pkgs[name].nextRelease.version) {
-      content[key][pkgConfigs[file].decodeName(name)] = '^' + pkgs[name].nextRelease.version;
+    if (pkgContexts[name].nextRelease && pkgContexts[name].nextRelease.version) {
+      content[key][pkgConfigs[file].decodeName(name)] = '^' + pkgContexts[name].nextRelease.version;
     }
   });
 
-  logger.log('Write package in %s with version %O', pkg.path, pkg.nextRelease.version);
+  logger.log('Write package in %s with version %O', pkg.path, context.nextRelease.version);
   if (!options.dryRun) {
     forEach(pkg.pkgFiles, ({content, indent, newline}, name) => {
       fs.writeFileSync(path.join(cwd, name), stringifyPackage(content, indent, newline));
