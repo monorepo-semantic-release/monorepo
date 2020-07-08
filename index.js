@@ -136,7 +136,7 @@ async function generateNotes(pluginConfig, context) {
 
   pkg.dependencies.forEach(({name}) => {
     if (pkgContexts[name].nextRelease && pkgContexts[name].nextRelease.version) {
-      notes.push(`* **${name}:** upgraded to ${pkgContexts[name].nextRelease.version}`);
+      notes.push(`* **${name}:** upgrade to ${pkgContexts[name].nextRelease.version}`);
     }
   });
 
