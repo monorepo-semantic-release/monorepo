@@ -39,19 +39,21 @@ function readPkgFiles(context, pkgConfigs) {
   const {cwd} = context;
 
   let pkgs = {};
-  for (let pkg of Object.values(context.pkgs)) {
+  for (let [name, pkg] of Object.entries(context.pkgs)) {
     pkg = {
       ...pkg,
       dependencies: [],
       pkgFiles: {},
     }
 
+    let found = false;
     for (const [pkgFileName, pkgConfig] of Object.entries(pkgConfigs)) {
       const file = path.join(cwd, pkg.path, pkgFileName);
-
       if (!fs.existsSync(file)) {
         continue;
       }
+
+      found = true;
 
       const content = fs.readFileSync(file).toString();
       const json = JSON.parse(content);
@@ -66,6 +68,11 @@ function readPkgFiles(context, pkgConfigs) {
       };
       pkgs[name] = pkg;
     }
+
+    // Fallback to original config
+    if (!found) {
+      pkgs[name] = pkg;
+    }
   }
   return pkgs;
 }
@@ -74,7 +81,7 @@ function updateDependencies(pkgs, pkgConfigs) {
   let graph = [];
   forEach(pkgs, (pkg) => {
     forEach(pkgConfigs, (config, file) => {
-      if (!pkg.pkgFiles[file]) {
+      if (!pkg.pkgFiles || !pkg.pkgFiles[file]) {
         return;
       }
 
