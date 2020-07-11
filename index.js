@@ -36,6 +36,8 @@ const pkgConfigs = {
 };
 
 function readPkgFiles(context, pkgConfigs) {
+  const {cwd} = context;
+
   let pkgs = {};
   for (let pkg of Object.values(context.pkgs)) {
     pkg = {
@@ -45,11 +47,13 @@ function readPkgFiles(context, pkgConfigs) {
     }
 
     for (const [pkgFileName, pkgConfig] of Object.entries(pkgConfigs)) {
-      if (!fs.existsSync(path.join(pkg.path, pkgFileName))) {
+      const file = path.join(cwd, pkg.path, pkgFileName);
+
+      if (!fs.existsSync(file)) {
         continue;
       }
 
-      const content = fs.readFileSync(path.join(pkg.path, pkgFileName)).toString();
+      const content = fs.readFileSync(file).toString();
       const json = JSON.parse(content);
 
       // TODO check all package name is same
