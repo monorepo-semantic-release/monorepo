@@ -26,6 +26,8 @@ jobs:
 
       - run: yarn install
 
+      - run: yarn ava
+
       - name: Release
         env:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
