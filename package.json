@@ -4,6 +4,11 @@
   "main": "index.js",
   "repository": "https://github.com/monorepo-semantic-release/monorepo.git",
   "author": "twinh <twinhuang@qq.com>",
+  "ava": {
+    "files": [
+      "test/**/*.test.js"
+    ]
+  },
   "license": "MIT",
   "files": [
     "index.js"
