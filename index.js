@@ -158,6 +158,7 @@ async function generateNotes(pluginConfig, context) {
 
   let notes = [
     '### Dependencies',
+    '',
   ];
 
   pkg.dependencies.forEach(({name}) => {
@@ -167,7 +168,7 @@ async function generateNotes(pluginConfig, context) {
   });
 
   // Remove duplicate notes from different packages
-  return notes.length > 1 ? uniq(notes).join('\n') : null;
+  return notes.length > 2 ? uniq(notes).join('\n') : null;
 }
 
 async function prepare(pluginConfig, context) {
