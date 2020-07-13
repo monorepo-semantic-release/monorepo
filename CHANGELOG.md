@@ -1,3 +1,17 @@
+# [1.1.0](https://github.com/monorepo-semantic-release/monorepo/compare/v1.0.1...v1.1.0) (2020-07-13)
+
+
+### Bug Fixes
+
+* read package file from context.cwd ([1c61942](https://github.com/monorepo-semantic-release/monorepo/commit/1c61942875c391146a20e0ca696d68b232c92eee))
+* return original config if package path dont have config file ([51d7747](https://github.com/monorepo-semantic-release/monorepo/commit/51d7747f0effd5377b6851c29760e124a1deaf4f))
+
+
+### Features
+
+* support `follow-major` releaseType ([77b1616](https://github.com/monorepo-semantic-release/monorepo/commit/77b16167e61bf334b5612a4f3c312dc6adbecd9b))
+* support `follow` releaseType ([2af6f78](https://github.com/monorepo-semantic-release/monorepo/commit/2af6f7839e2b66fc4808b2a0e672c18f6b8b6789))
+
 ## [1.0.1](https://github.com/monorepo-semantic-release/monorepo/compare/v1.0.0...v1.0.1) (2020-07-08)
 
 
