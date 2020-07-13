@@ -1,3 +1,10 @@
+## [1.1.1](https://github.com/monorepo-semantic-release/monorepo/compare/v1.1.0...v1.1.1) (2020-07-13)
+
+
+### Bug Fixes
+
+* add empty line between title and content ([825ea7b](https://github.com/monorepo-semantic-release/monorepo/commit/825ea7b92614de3833937a44905c68895eea0f5c))
+
 # [1.1.0](https://github.com/monorepo-semantic-release/monorepo/compare/v1.0.1...v1.1.0) (2020-07-13)
 
 
