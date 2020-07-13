@@ -129,7 +129,8 @@ async function analyzeCommitsAll(pluginConfig, context) {
     // Update package version if dependency was updated
     pkgContext.pkg.dependencies.forEach(({name}) => {
       if (pkgContexts[name].nextReleaseType) {
-        pkgContexts[pkgContext.name].nextReleaseType = 'patch';
+        pkgContexts[pkgContext.name].nextReleaseType = pluginConfig.releaseType === 'follow' ?
+          pkgContexts[name].nextReleaseType : 'patch';
         return false;
       }
     });
