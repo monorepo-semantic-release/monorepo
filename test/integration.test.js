@@ -368,12 +368,12 @@ test('Dont set next release type if dependency doesnt have new release', async t
 
 async function followReleaseTypeMacro(t, releaseType) {
   const pluginConfig = {
-    releaseTypes: 'follow'
+    releaseType: 'follow'
   };
   const pkgContexts = {
     '@test/base': {
       name: '@test/base',
-      nextReleaseType: 'patch',
+      nextReleaseType: releaseType,
       pkg: {
         dependencies: [],
       },
@@ -392,7 +392,7 @@ async function followReleaseTypeMacro(t, releaseType) {
 
   const nextReleaseTypes = await t.context.m.analyzeCommitsAll(pluginConfig, {pkgContexts});
 
-  t.deepEqual(nextReleaseTypes, {'@test/base': 'patch', '@test/pkg1': 'patch'});
+  t.deepEqual(nextReleaseTypes, {'@test/base': releaseType, '@test/pkg1': releaseType});
 };
 
 followReleaseTypeMacro.title = (providedTitle) => `Follow dependency release type: ${providedTitle}`;
