@@ -366,14 +366,14 @@ test('Dont set next release type if dependency doesnt have new release', async t
   t.deepEqual(nextReleaseTypes, {'@test/base': undefined, '@test/pkg1': undefined});
 });
 
-async function followReleaseTypeMacro(t, releaseType) {
+async function releaseTypeMacro(t, config, baseReleaseType, pkgReleaseType) {
   const pluginConfig = {
-    releaseType: 'follow'
+    releaseType: config
   };
   const pkgContexts = {
     '@test/base': {
       name: '@test/base',
-      nextReleaseType: releaseType,
+      nextReleaseType: baseReleaseType,
       pkg: {
         dependencies: [],
       },
@@ -392,14 +392,17 @@ async function followReleaseTypeMacro(t, releaseType) {
 
   const nextReleaseTypes = await t.context.m.analyzeCommitsAll(pluginConfig, {pkgContexts});
 
-  t.deepEqual(nextReleaseTypes, {'@test/base': releaseType, '@test/pkg1': releaseType});
+  t.deepEqual(nextReleaseTypes, {'@test/base': baseReleaseType, '@test/pkg1': pkgReleaseType});
 };
 
-followReleaseTypeMacro.title = (providedTitle) => `Follow dependency release type: ${providedTitle}`;
+releaseTypeMacro.title = (releaseType, releaseType2, basePlgReleaseType) => `Release type: ${releaseType}, base package release type: ${basePlgReleaseType}`;
 
-test('patch', followReleaseTypeMacro, 'patch');
-test('minor', followReleaseTypeMacro, 'minor');
-test('major', followReleaseTypeMacro, 'major');
+test('follow', releaseTypeMacro, 'follow', 'patch', 'patch');
+test('follow', releaseTypeMacro, 'follow', 'minor', 'minor');
+test('follow', releaseTypeMacro, 'follow', 'major', 'major');
+test('follow-major', releaseTypeMacro, 'follow-major', 'patch', 'patch');
+test('follow-major', releaseTypeMacro, 'follow-major', 'minor', 'patch');
+test('follow-major', releaseTypeMacro, 'follow-major', 'major', 'major');
 
 test('Add dependencies notes to changelog if dependency have next release', async t => {
   const pluginConfig = {};

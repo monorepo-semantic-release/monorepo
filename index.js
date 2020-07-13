@@ -112,6 +112,20 @@ function updateDependencies(pkgs, pkgConfigs) {
   return pkgs;
 }
 
+function getReleaseType(config, nextReleaseType) {
+  switch (config) {
+    case 'follow':
+      return nextReleaseType;
+
+    case 'follow-major':
+      return nextReleaseType === 'major' ? 'major' : 'patch';
+
+    case 'patch':
+    default:
+      return 'patch';
+  }
+}
+
 async function initPkgs(pluginConfig, context) {
   let pkgs = readPkgFiles(context, pkgConfigs);
   pkgs = updateDependencies(pkgs, pkgConfigs);
@@ -119,6 +133,7 @@ async function initPkgs(pluginConfig, context) {
 }
 
 async function analyzeCommitsAll(pluginConfig, context) {
+  const {releaseType} = pluginConfig;
   const {pkgContexts} = context;
 
   forEach(pkgContexts, (pkgContext) => {
@@ -129,8 +144,7 @@ async function analyzeCommitsAll(pluginConfig, context) {
     // Update package version if dependency was updated
     pkgContext.pkg.dependencies.forEach(({name}) => {
       if (pkgContexts[name].nextReleaseType) {
-        pkgContexts[pkgContext.name].nextReleaseType = pluginConfig.releaseType === 'follow' ?
-          pkgContexts[name].nextReleaseType : 'patch';
+        pkgContexts[pkgContext.name].nextReleaseType = getReleaseType(releaseType, pkgContexts[name].nextReleaseType);
         return false;
       }
     });
