@@ -195,9 +195,14 @@ async function generateNotes(pluginConfig, context) {
     '',
   ];
 
+  const tpl = template(`* **\${name}:** upgrade from \${lastRelease.version} to \${nextRelease.version}`);
   pkg.dependencies.forEach(({name}) => {
     if (pkgContexts[name].nextRelease && pkgContexts[name].nextRelease.version) {
-      notes.push(`* **${name}:** upgrade to ${pkgContexts[name].nextRelease.version}`);
+      notes.push(tpl({
+        name,
+        lastRelease: pkgContexts[name].lastRelease,
+        nextRelease: pkgContexts[name].nextRelease
+      }));
     }
   });
 
@@ -215,7 +220,7 @@ async function generateNotes(pluginConfig, context) {
 }
 
 async function prepare(pluginConfig, context) {
-  const {cwd, logger, options, pkg, pkgs, pkgContexts} = context;
+  const {cwd, logger, options, pkg, pkgContexts} = context;
 
   // Update self package version, such as package.json
   forEach(pkg.pkgFiles, pkgFile => {
