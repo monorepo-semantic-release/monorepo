@@ -1,3 +1,15 @@
+# [2.0.0-beta.1](https://github.com/monorepo-semantic-release/monorepo/compare/v1.1.1...v2.0.0-beta.1) (2020-07-15)
+
+
+### Features
+
+* add `sameVersions` config, use to keep groups of packages in same version ([f175d9f](https://github.com/monorepo-semantic-release/monorepo/commit/f175d9fa47ebbeb97989859d0e2077376e79679d))
+
+
+### BREAKING CHANGES
+
+* `analyzeCommitsAll` now returns objects with `nextReleaseType` and `nextReleaseVersion` keys, instead of a string of release type.
+
 ## [1.1.1](https://github.com/monorepo-semantic-release/monorepo/compare/v1.1.0...v1.1.1) (2020-07-13)
 
 
