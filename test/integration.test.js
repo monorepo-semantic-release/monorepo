@@ -418,6 +418,9 @@ test('Add dependencies notes to changelog if dependency have next release', asyn
   const pluginConfig = {};
   const pkgBaseContext = {
     name: '@test/base',
+    lastRelease: {
+      version: '1.0.0',
+    },
     nextRelease: {
       version: '2.0.0',
     },
@@ -433,7 +436,7 @@ test('Add dependencies notes to changelog if dependency have next release', asyn
           name: '@test/base',
         }
       ],
-    }
+    },
   }
 
   const pkgContexts = {
@@ -442,12 +445,14 @@ test('Add dependencies notes to changelog if dependency have next release', asyn
   };
   const context = {
     pkg: pkg1Context.pkg,
-    pkgContexts
+    pkgContexts,
+    options: {},
+    commits: [{message: 'test'}],
   };
 
   const notes = await t.context.m.generateNotes(pluginConfig, context);
 
-  t.is(notes, '### Dependencies\n\n* **@test/base:** upgrade to 2.0.0');
+  t.is(notes, '### Dependencies\n\n* **@test/base:** upgrade from 1.0.0 to 2.0.0');
 });
 
 test('Dont add dependencies notes to changelog if dependency doesnt have next release', async t => {
@@ -475,7 +480,11 @@ test('Dont add dependencies notes to changelog if dependency doesnt have next re
   };
   const context = {
     pkg: pkg1Context.pkg,
-    pkgContexts
+    pkgContexts,
+    options: {},
+    commits: [{message: 'test'}],
+    lastRelease: {},
+    nextRelease: {},
   };
 
   const notes = await t.context.m.generateNotes(pluginConfig, context);
