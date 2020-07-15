@@ -1,6 +1,6 @@
 const fs = require('fs');
 const path = require('path');
-const {uniq, forEach, keyBy, mapValues} = require('lodash');
+const {uniq, forEach, keyBy, mapValues, template} = require('lodash');
 const stringifyPackage = require('stringify-package');
 const toposort = require('toposort');
 const detectIndent = require('detect-indent');
@@ -187,7 +187,8 @@ async function analyzeCommitsAll(pluginConfig, context) {
 }
 
 async function generateNotes(pluginConfig, context) {
-  const {pkg, pkgContexts} = context;
+  const {sameVersions = []} = pluginConfig;
+  const {options, pkg, pkgContexts, commits, nextRelease} = context;
 
   let notes = [
     '### Dependencies',
@@ -199,6 +200,15 @@ async function generateNotes(pluginConfig, context) {
       notes.push(`* **${name}:** upgrade to ${pkgContexts[name].nextRelease.version}`);
     }
   });
+
+  if (options.versionMode !== 'fixed' && !commits.length && notes.length === 2) {
+    notes.push(template(`* upgrade to \${version} with packages: \${packages}`)({
+      version: nextRelease.version,
+      packages: sameVersions.find(pkgs => pkgs.includes(context.name))
+        .filter(pkg => pkg !== context.name)
+        .join(', '),
+    }));
+  }
 
   // Remove duplicate notes from different packages
   return notes.length > 2 ? uniq(notes).join('\n') : null;
