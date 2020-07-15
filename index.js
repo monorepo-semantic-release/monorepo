@@ -4,7 +4,10 @@ const {uniq, forEach, keyBy, mapValues} = require('lodash');
 const stringifyPackage = require('stringify-package');
 const toposort = require('toposort');
 const detectIndent = require('detect-indent');
-const detectNewline = require('detect-newline')
+const detectNewline = require('detect-newline');
+const semver = require('semver');
+const getNextVersion = require('semantic-release/lib/get-next-version');
+const {FIRST_RELEASE} = require('semantic-release/lib/definitions/constants');
 
 function encodeName(name) {
   return '@' + name;
@@ -133,24 +136,54 @@ async function initPkgs(pluginConfig, context) {
 }
 
 async function analyzeCommitsAll(pluginConfig, context) {
-  const {releaseType} = pluginConfig;
+  const {releaseType, sameVersions = []} = pluginConfig;
   const {pkgContexts} = context;
+  const result = mapValues(pkgContexts, () => ({}));
 
   forEach(pkgContexts, (pkgContext) => {
     if (pkgContext.nextReleaseType) {
+      result[pkgContext.name].nextReleaseType = pkgContext.nextReleaseType;
       return;
     }
 
     // Update package version if dependency was updated
     pkgContext.pkg.dependencies.forEach(({name}) => {
       if (pkgContexts[name].nextReleaseType) {
-        pkgContexts[pkgContext.name].nextReleaseType = getReleaseType(releaseType, pkgContexts[name].nextReleaseType);
+        result[pkgContext.name].nextReleaseType = pkgContexts[pkgContext.name].nextReleaseType = getReleaseType(releaseType, pkgContexts[name].nextReleaseType);
         return false;
       }
     });
   });
 
-  return mapValues(pkgContexts, 'nextReleaseType');
+  sameVersions.forEach((pkgs) => {
+    const hasRelease = pkgs.find(pkg => pkgContexts[pkg].nextReleaseType);
+    if (!hasRelease) {
+      return;
+    }
+
+    const highestVersion = pkgs.reduce((highestVersion, pkg) => {
+      const pkgContext = pkgContexts[pkg];
+      if (!pkgContext.nextReleaseType) {
+        return highestVersion;
+      }
+
+      const nextReleaseVersion = getNextVersion({
+        ...pkgContext,
+        nextRelease: {
+          type: pkgContext.nextReleaseType,
+          channel: pkgContext.branch.channel || null,
+        },
+      });
+
+      return semver.gt(highestVersion, nextReleaseVersion) ? highestVersion : nextReleaseVersion;
+    }, FIRST_RELEASE);
+
+    pkgs.forEach(pkg => {
+      result[pkg].nextReleaseVersion = highestVersion;
+    });
+  });
+
+  return result;
 }
 
 async function generateNotes(pluginConfig, context) {

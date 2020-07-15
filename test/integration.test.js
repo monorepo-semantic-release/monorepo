@@ -2,7 +2,7 @@ const test = require('ava');
 const clearModule = require('clear-module');
 const {stub} = require('sinon');
 const tempy = require('tempy');
-const {outputFile, readFile} = require('fs-extra');
+const {outputFile} = require('fs-extra');
 const path = require('path');
 
 test.beforeEach(t => {
@@ -298,9 +298,12 @@ test('Set release type if dependency has new release', async t => {
     }
   };
 
-  const nextReleaseTypes = await t.context.m.analyzeCommitsAll(pluginConfig, {pkgContexts});
+  const result = await t.context.m.analyzeCommitsAll(pluginConfig, {pkgContexts});
 
-  t.deepEqual(nextReleaseTypes, {'@test/base': 'patch', '@test/pkg1': 'patch'});
+  t.deepEqual(result, {
+    '@test/base': {nextReleaseType: 'patch'},
+    '@test/pkg1': {nextReleaseType: 'patch'}
+  });
 });
 
 test('Set release type if parent dependency has new release', async t => {
@@ -335,9 +338,13 @@ test('Set release type if parent dependency has new release', async t => {
     }
   };
 
-  const nextReleaseTypes = await t.context.m.analyzeCommitsAll(pluginConfig, {pkgContexts});
+  const result = await t.context.m.analyzeCommitsAll(pluginConfig, {pkgContexts});
 
-  t.deepEqual(nextReleaseTypes, {'@test/base': 'patch', '@test/pkg1': 'patch', '@test/pkg2': 'patch'});
+  t.deepEqual(result, {
+    '@test/base': {nextReleaseType: 'patch'},
+    '@test/pkg1': {nextReleaseType: 'patch'},
+    '@test/pkg2': {nextReleaseType: 'patch'},
+  });
 });
 
 test('Dont set next release type if dependency doesnt have new release', async t => {
@@ -361,9 +368,9 @@ test('Dont set next release type if dependency doesnt have new release', async t
     }
   };
 
-  const nextReleaseTypes = await t.context.m.analyzeCommitsAll(pluginConfig, {pkgContexts});
+  const result = await t.context.m.analyzeCommitsAll(pluginConfig, {pkgContexts});
 
-  t.deepEqual(nextReleaseTypes, {'@test/base': undefined, '@test/pkg1': undefined});
+  t.deepEqual(result, {'@test/base': {}, '@test/pkg1': {}});
 });
 
 async function releaseTypeMacro(t, config, baseReleaseType, pkgReleaseType) {
@@ -390,9 +397,12 @@ async function releaseTypeMacro(t, config, baseReleaseType, pkgReleaseType) {
     }
   };
 
-  const nextReleaseTypes = await t.context.m.analyzeCommitsAll(pluginConfig, {pkgContexts});
+  const result = await t.context.m.analyzeCommitsAll(pluginConfig, {pkgContexts});
 
-  t.deepEqual(nextReleaseTypes, {'@test/base': baseReleaseType, '@test/pkg1': pkgReleaseType});
+  t.deepEqual(result, {
+    '@test/base': {nextReleaseType: baseReleaseType},
+    '@test/pkg1': {nextReleaseType: pkgReleaseType},
+  });
 };
 
 releaseTypeMacro.title = (releaseType, releaseType2, basePlgReleaseType) => `Release type: ${releaseType}, base package release type: ${basePlgReleaseType}`;
@@ -471,4 +481,53 @@ test('Dont add dependencies notes to changelog if dependency doesnt have next re
   const notes = await t.context.m.generateNotes(pluginConfig, context);
 
   t.is(notes, null);
+});
+
+test('Update package to same version if the other is updated', async t => {
+  const pluginConfig = {
+    sameVersions: [
+      [
+        '@test/base',
+        '@test/pkg1',
+      ]
+    ]
+  };
+
+  const logger = {
+    log: stub(),
+  };
+
+  const pkgContexts = {
+    '@test/base': {
+      name: '@test/base',
+      nextReleaseType: 'patch',
+      branch: {},
+      logger,
+      lastRelease: {
+        version: '2.0.0'
+      },
+      pkg: {
+        dependencies: [],
+      },
+    },
+    '@test/pkg1': {
+      name: '@test/pkg1',
+      nextReleaseType: 'patch',
+      branch: {},
+      logger,
+      lastRelease: {
+        version: '1.0.0'
+      },
+      pkg: {
+        dependencies: [],
+      }
+    }
+  };
+
+  const result = await t.context.m.analyzeCommitsAll(pluginConfig, {pkgContexts});
+
+  t.deepEqual(result, {
+    '@test/base': {nextReleaseType: 'patch', nextReleaseVersion: '2.0.1'},
+    '@test/pkg1': {nextReleaseType: 'patch', nextReleaseVersion: '2.0.1'}
+  });
 });
