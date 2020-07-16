@@ -136,7 +136,7 @@ async function initPkgs(pluginConfig, context) {
 }
 
 async function analyzeCommitsAll(pluginConfig, context) {
-  const {releaseType, sameVersions = []} = pluginConfig;
+  const {releaseTypes, sameVersions = []} = pluginConfig;
   const {pkgContexts} = context;
   const result = mapValues(pkgContexts, () => ({}));
 
@@ -149,7 +149,7 @@ async function analyzeCommitsAll(pluginConfig, context) {
     // Update package version if dependency was updated
     pkgContext.pkg.dependencies.forEach(({name}) => {
       if (pkgContexts[name].nextReleaseType) {
-        result[pkgContext.name].nextReleaseType = pkgContexts[pkgContext.name].nextReleaseType = getReleaseType(releaseType, pkgContexts[name].nextReleaseType);
+        result[pkgContext.name].nextReleaseType = pkgContexts[pkgContext.name].nextReleaseType = getReleaseType(releaseTypes, pkgContexts[name].nextReleaseType);
         return false;
       }
     });

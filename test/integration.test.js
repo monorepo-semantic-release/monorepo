@@ -375,7 +375,7 @@ test('Dont set next release type if dependency doesnt have new release', async t
 
 async function releaseTypeMacro(t, config, baseReleaseType, pkgReleaseType) {
   const pluginConfig = {
-    releaseType: config
+    releaseTypes: config
   };
   const pkgContexts = {
     '@test/base': {
