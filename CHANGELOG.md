@@ -1,3 +1,20 @@
+# [2.0.0-beta.2](https://github.com/monorepo-semantic-release/monorepo/compare/v2.0.0-beta.1...v2.0.0-beta.2) (2020-07-16)
+
+
+### Code Refactoring
+
+* rename `releaseType` to `releaseTypes`, prepare for multi release types support ([e54d791](https://github.com/monorepo-semantic-release/monorepo/commit/e54d791e1809e4d14b642e816c5140cca9c6ae51))
+
+
+### Features
+
+* add notes for same version update when package dont have dependency notes ([c14a3da](https://github.com/monorepo-semantic-release/monorepo/commit/c14a3da2d17921873c2551636a79a3e378516349))
+
+
+### BREAKING CHANGES
+
+* rename `releaseType` to `releaseTypes`
+
 # [2.0.0-beta.1](https://github.com/monorepo-semantic-release/monorepo/compare/v1.1.1...v2.0.0-beta.1) (2020-07-15)
 
 
