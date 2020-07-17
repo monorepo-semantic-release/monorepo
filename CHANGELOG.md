@@ -1,3 +1,10 @@
+# [2.0.0-beta.3](https://github.com/monorepo-semantic-release/monorepo/compare/v2.0.0-beta.2...v2.0.0-beta.3) (2020-07-17)
+
+
+### Bug Fixes
+
+* missing pkg when pkg don't have dependency with other packages ([9f07183](https://github.com/monorepo-semantic-release/monorepo/commit/9f0718302bc2f26c1e9cf33917c3967e18debc65))
+
 # [2.0.0-beta.2](https://github.com/monorepo-semantic-release/monorepo/compare/v2.0.0-beta.1...v2.0.0-beta.2) (2020-07-16)
 
 
