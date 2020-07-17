@@ -276,6 +276,79 @@ test('Init packages with one package dont have config file', async t => {
   });
 });
 
+test('Init packages without dependencies', async t => {
+  const cwd = tempy.directory();
+  await outputFile(path.resolve(cwd, 'packages/base/package.json'), JSON.stringify({name: '@test/base'}));
+  await outputFile(path.resolve(cwd, 'packages/pkg1/package.json'), JSON.stringify({
+    name: '@test/pkg1',
+    dependencies: {
+      '@test/base': '^1.0.0'
+    }
+  }));
+  await outputFile(path.resolve(cwd, 'packages/pkg2/package.json'), JSON.stringify({name: '@test/pkg2'}));
+
+  const pkgs = {
+    '@test/base': {
+      name: '@test/base',
+      path: 'packages/base'
+    },
+    '@test/pkg1': {
+      name: '@test/pkg1',
+      path: 'packages/pkg1'
+    },
+    '@test/pkg2': {
+      name: '@test/pkg2',
+      path: 'packages/pkg2'
+    },
+  };
+
+  const initPkgs = await t.context.m.initPkgs({}, {cwd, pkgs});
+
+  t.deepEqual(initPkgs, {
+    '@test/base': {
+      name: '@test/base',
+      path: 'packages/base',
+      dependencies: [],
+      pkgFiles: {
+        'package.json': {
+          content: {name: '@test/base'},
+          indent: 0,
+          newline: undefined
+        }
+      }
+    },
+    '@test/pkg1': {
+      name: '@test/pkg1',
+      path: 'packages/pkg1',
+      dependencies: [
+        {file: 'package.json', key: 'dependencies', name: '@test/base'}
+      ],
+      pkgFiles: {
+        'package.json': {
+          content: {
+            name: '@test/pkg1',
+            dependencies: {'@test/base': '^1.0.0'}
+          },
+          indent: 0,
+          newline: undefined
+        }
+      }
+    },
+    '@test/pkg2': {
+      name: '@test/pkg2',
+      path: 'packages/pkg2',
+      dependencies: [],
+      pkgFiles: {
+        'package.json': {
+          content: {name: '@test/pkg2'},
+          indent: 0,
+          newline: undefined
+        }
+      }
+    },
+  });
+});
+
 test('Set release type if dependency has new release', async t => {
   const pluginConfig = {};
   const pkgContexts = {

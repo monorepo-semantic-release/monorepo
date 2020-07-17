@@ -83,6 +83,7 @@ function readPkgFiles(context, pkgConfigs) {
 function updateDependencies(pkgs, pkgConfigs) {
   let graph = [];
   forEach(pkgs, (pkg) => {
+    let found = false;
     forEach(pkgConfigs, (config, file) => {
       if (!pkg.pkgFiles || !pkg.pkgFiles[file]) {
         return;
@@ -101,15 +102,20 @@ function updateDependencies(pkgs, pkgConfigs) {
             return;
           }
 
+          found = true;
           graph.push([pkgs[name], pkg]);
           pkg.dependencies.push({file, key, name});
         });
       });
     });
+
+    if (!found) {
+      graph.push([pkg]);
+    }
   });
 
   if (graph.length) {
-    pkgs = keyBy(toposort(graph), 'name');
+    pkgs = keyBy(toposort(graph).filter(Boolean), 'name');
   }
 
   return pkgs;
