@@ -1,3 +1,11 @@
+# [2.0.0-beta.4](https://github.com/monorepo-semantic-release/monorepo/compare/v2.0.0-beta.3...v2.0.0-beta.4) (2020-08-17)
+
+
+### Bug Fixes
+
+* use context.getNextVersion to calculate version ([719d272](https://github.com/monorepo-semantic-release/monorepo/commit/719d272671ae1b8255101da2bfd10a5aab1a6b44))
+* use MIN_RELEASE instead of FIRST_RELEASE ([71a6394](https://github.com/monorepo-semantic-release/monorepo/commit/71a639470936487ba2ba5898f6d4c442ba394285))
+
 # [2.0.0-beta.3](https://github.com/monorepo-semantic-release/monorepo/compare/v2.0.0-beta.2...v2.0.0-beta.3) (2020-07-17)
 
 
