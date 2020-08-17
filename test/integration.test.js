@@ -606,7 +606,7 @@ test('Update package to same version if the other is updated', async t => {
     }
   };
 
-  const result = await t.context.m.analyzeCommitsAll(pluginConfig, {pkgContexts});
+  const result = await t.context.m.analyzeCommitsAll(pluginConfig, {pkgContexts, getNextVersion: () => '2.0.1'});
 
   t.deepEqual(result, {
     '@test/base': {nextReleaseType: 'patch', nextReleaseVersion: '2.0.1'},

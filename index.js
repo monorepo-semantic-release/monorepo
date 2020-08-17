@@ -6,8 +6,7 @@ const toposort = require('toposort');
 const detectIndent = require('detect-indent');
 const detectNewline = require('detect-newline');
 const semver = require('semver');
-const getNextVersion = require('semantic-release/lib/get-next-version');
-const {MIN_RELEASE} = require('semantic-release/lib/definitions/constants');
+const MIN_RELEASE = '0.0.0-0';
 
 function encodeName(name) {
   return '@' + name;
@@ -173,7 +172,7 @@ async function analyzeCommitsAll(pluginConfig, context) {
         return highestVersion;
       }
 
-      const nextReleaseVersion = getNextVersion({
+      const nextReleaseVersion = context.getNextVersion({
         ...pkgContext,
         nextRelease: {
           type: pkgContext.nextReleaseType,
