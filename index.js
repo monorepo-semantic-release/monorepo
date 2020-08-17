@@ -7,7 +7,7 @@ const detectIndent = require('detect-indent');
 const detectNewline = require('detect-newline');
 const semver = require('semver');
 const getNextVersion = require('semantic-release/lib/get-next-version');
-const {FIRST_RELEASE} = require('semantic-release/lib/definitions/constants');
+const {MIN_RELEASE} = require('semantic-release/lib/definitions/constants');
 
 function encodeName(name) {
   return '@' + name;
@@ -182,7 +182,7 @@ async function analyzeCommitsAll(pluginConfig, context) {
       });
 
       return semver.gt(highestVersion, nextReleaseVersion) ? highestVersion : nextReleaseVersion;
-    }, FIRST_RELEASE);
+    }, MIN_RELEASE);
 
     pkgs.forEach(pkg => {
       result[pkg].nextReleaseVersion = highestVersion;
