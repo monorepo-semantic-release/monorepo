@@ -1,3 +1,10 @@
+# [2.0.0-beta.5](https://github.com/monorepo-semantic-release/monorepo/compare/v2.0.0-beta.4...v2.0.0-beta.5) (2020-09-25)
+
+
+### Bug Fixes
+
+* ignore "form xxx" if not last release ([d57b79f](https://github.com/monorepo-semantic-release/monorepo/commit/d57b79f05bfc6dfd2f0c96bb2c20e9a9f1e478d7))
+
 # [2.0.0-beta.4](https://github.com/monorepo-semantic-release/monorepo/compare/v2.0.0-beta.3...v2.0.0-beta.4) (2020-08-17)
 
 
