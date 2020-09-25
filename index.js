@@ -200,7 +200,7 @@ async function generateNotes(pluginConfig, context) {
     '',
   ];
 
-  const tpl = template(`* **\${name}:** upgrade from \${lastRelease.version} to \${nextRelease.version}`);
+  const tpl = template(`* **\${name}:** upgrade\${lastRelease.version ? (' from ' + lastRelease.version) : ''} to \${nextRelease.version}`);
   pkg.dependencies.forEach(({name}) => {
     if (pkgContexts[name].nextRelease && pkgContexts[name].nextRelease.version) {
       notes.push(tpl({
