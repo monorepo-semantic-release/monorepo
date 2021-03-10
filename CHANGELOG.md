@@ -1,3 +1,31 @@
+# [2.0.0](https://github.com/monorepo-semantic-release/monorepo/compare/v1.1.1...v2.0.0) (2021-03-10)
+
+
+### Bug Fixes
+
+* ignore "form xxx" if not last release ([d57b79f](https://github.com/monorepo-semantic-release/monorepo/commit/d57b79f05bfc6dfd2f0c96bb2c20e9a9f1e478d7))
+* missing pkg when pkg don't have dependency with other packages ([9f07183](https://github.com/monorepo-semantic-release/monorepo/commit/9f0718302bc2f26c1e9cf33917c3967e18debc65))
+* use context.getNextVersion to calculate version ([719d272](https://github.com/monorepo-semantic-release/monorepo/commit/719d272671ae1b8255101da2bfd10a5aab1a6b44))
+* use MIN_RELEASE instead of FIRST_RELEASE ([71a6394](https://github.com/monorepo-semantic-release/monorepo/commit/71a639470936487ba2ba5898f6d4c442ba394285))
+
+
+### Code Refactoring
+
+* rename `releaseType` to `releaseTypes`, prepare for multi release types support ([e54d791](https://github.com/monorepo-semantic-release/monorepo/commit/e54d791e1809e4d14b642e816c5140cca9c6ae51))
+
+
+### Features
+
+* add `sameVersions` config, use to keep groups of packages in same version ([f175d9f](https://github.com/monorepo-semantic-release/monorepo/commit/f175d9fa47ebbeb97989859d0e2077376e79679d))
+* add notes for same version update when package dont have dependency notes ([c14a3da](https://github.com/monorepo-semantic-release/monorepo/commit/c14a3da2d17921873c2551636a79a3e378516349))
+* format version text ([2b07e7c](https://github.com/monorepo-semantic-release/monorepo/commit/2b07e7c04a99161c13416cb604995469a48a2958))
+
+
+### BREAKING CHANGES
+
+* rename `releaseType` to `releaseTypes`
+* `analyzeCommitsAll` now returns objects with `nextReleaseType` and `nextReleaseVersion` keys, instead of a string of release type.
+
 # [2.0.0-beta.4](https://github.com/monorepo-semantic-release/monorepo/compare/v2.0.0-beta.3...v2.0.0-beta.4) (2020-08-17)
 
 
