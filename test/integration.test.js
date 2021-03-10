@@ -525,7 +525,7 @@ test('Add dependencies notes to changelog if dependency have next release', asyn
 
   const notes = await t.context.m.generateNotes(pluginConfig, context);
 
-  t.is(notes, '### Dependencies\n\n* **@test/base:** upgrade from 1.0.0 to 2.0.0');
+  t.is(notes, '### Dependencies\n\n* **@test/base:** upgrade from `1.0.0` to `2.0.0`');
 });
 
 test('Add dependencies notes to changelog without last release', async t => {
@@ -564,7 +564,7 @@ test('Add dependencies notes to changelog without last release', async t => {
 
   const notes = await t.context.m.generateNotes(pluginConfig, context);
 
-  t.is(notes, '### Dependencies\n\n* **@test/base:** upgrade to 1.0.0');
+  t.is(notes, '### Dependencies\n\n* **@test/base:** upgrade to `1.0.0`');
 });
 
 test('Dont add dependencies notes to changelog if dependency doesnt have next release', async t => {
