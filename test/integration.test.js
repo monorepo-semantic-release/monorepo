@@ -740,3 +740,50 @@ test('Update composer repositories version', async t => {
     ],
   });
 });
+
+test('Update composer.lock', async t => {
+  const pluginConfig = {};
+  const pkgBaseContext = {
+    name: '@test/base',
+    lastRelease: {
+      version: '1.0.0',
+    },
+    nextRelease: {
+      version: '2.0.0',
+    },
+    pkg: {
+      dependencies: [],
+    },
+  };
+  const pkg1Context = {
+    name: '@test/pkg1',
+    pkg: {
+      dependencies: [
+        {
+          name: '@test/base',
+        },
+      ],
+    },
+  };
+
+  const pkgContexts = {
+    '@test/base': pkgBaseContext,
+    '@test/pkg1': pkg1Context,
+  };
+  
+  const logs = [];
+  const context = {
+    pkg: pkg1Context.pkg,
+    pkgContexts,
+    options: {},
+    logger: {
+      log: (msg) => {
+        logs.push(msg);
+      }
+    },
+    commits: [{message: 'test'}],
+  };
+
+  await t.context.m.prepareAll(pluginConfig, context);
+  t.deepEqual(logs.length, 1);
+});

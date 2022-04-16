@@ -6,6 +6,7 @@ const toposort = require('toposort');
 const detectIndent = require('detect-indent');
 const detectNewline = require('detect-newline');
 const semver = require('semver');
+const execa = require('execa');
 const MIN_RELEASE = '0.0.0-0';
 
 function encodeName(name) {
@@ -274,4 +275,29 @@ async function prepare(pluginConfig, context) {
   }
 }
 
-module.exports = {initPkgs, analyzeCommitsAll, generateNotes, prepare};
+async function prepareAll(pluginConfig, context) {
+  const {logger, pkgContexts} = context;
+
+  const names = [];
+  for (const name in pkgContexts) {
+    if (
+      pkgContexts[name].nextRelease
+      // Ignore main package
+      && pkgContexts[name].pkg.path !== '.'
+    ) {
+      names.push(decodeName(name));
+    }
+  }
+  if (names.length === 0) {
+    return;
+  }
+
+  try {
+    const result = await execa('composer', ['update', '--no-install', ...names]);
+    logger.log('Run composer result: ', result.stderr);
+  } catch (error) {
+    logger.log('Fail to update composer.lock: ', error);
+  }
+}
+
+module.exports = {initPkgs, analyzeCommitsAll, generateNotes, prepare, prepareAll};
