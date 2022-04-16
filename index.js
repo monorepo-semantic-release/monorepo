@@ -152,7 +152,10 @@ function updateComposerVersions(content, pkgContexts) {
     }
 
     for (const name in repository.options.versions) {
-      repository.options.versions[name] = pkgContexts[encodeName(name)].nextRelease.version;
+      const encodedName = encodeName(name);
+      if (pkgContexts[encodedName] && pkgContexts[encodedName].nextRelease) {
+        repository.options.versions[name] = pkgContexts[encodedName].nextRelease.version;
+      }
     }
   }
 };
