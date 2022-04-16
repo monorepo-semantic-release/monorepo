@@ -134,6 +134,28 @@ function getReleaseType(config, nextReleaseType) {
   }
 }
 
+/**
+ * Update package version that defined in "repositories" key
+ * 
+ * @link https://getcomposer.org/doc/05-repositories.md#path
+ */
+function updateComposerVersions(content, pkgContexts) {
+  if (!content.repositories) {
+    return;
+  }
+  
+  for (const i in content.repositories) {
+    const repository = content.repositories[i];
+    if (!repository || !repository.options || !repository.options.versions) {
+      continue;
+    }
+
+    for (const name in repository.options.versions) {
+      repository.options.versions[name] = pkgContexts[encodeName(name)].nextRelease.version;
+    }
+  }
+};
+
 async function initPkgs(pluginConfig, context) {
   let pkgs = readPkgFiles(context, pkgConfigs);
   pkgs = updateDependencies(pkgs, pkgConfigs);
@@ -227,11 +249,13 @@ async function generateNotes(pluginConfig, context) {
 async function prepare(pluginConfig, context) {
   const {cwd, logger, options, pkg, pkgContexts} = context;
 
-  // Update self package version, such as package.json
   forEach(pkg.pkgFiles, pkgFile => {
+    // Update self package version, such as package.json
     if (pkgFile.content.version) {
       pkgFile.content.version = context.nextRelease.version;
     }
+
+    updateComposerVersions(pkgFile.content, pkgContexts);
   });
 
   // Update dependency versions
