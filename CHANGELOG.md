@@ -1,3 +1,10 @@
+## [2.1.1](https://github.com/monorepo-semantic-release/monorepo/compare/v2.1.0...v2.1.1) (2022-04-16)
+
+
+### Bug Fixes
+
+* `nextRelease` is undefined when sub package has no release ([d6d9596](https://github.com/monorepo-semantic-release/monorepo/commit/d6d9596479cc4f5449fb4663e89e0f133332cd39))
+
 # [2.1.0](https://github.com/monorepo-semantic-release/monorepo/compare/v2.0.0...v2.1.0) (2022-04-16)
 
 
