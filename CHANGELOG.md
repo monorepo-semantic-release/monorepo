@@ -1,3 +1,11 @@
+# [2.1.0](https://github.com/monorepo-semantic-release/monorepo/compare/v2.0.0...v2.1.0) (2022-04-16)
+
+
+### Features
+
+* update composer.lock if sub package has release ([ed36320](https://github.com/monorepo-semantic-release/monorepo/commit/ed36320a1a4182439ae47a2e7eea1674b6494b7e))
+* update package version that defined in "repositories" key ([6f8dbe6](https://github.com/monorepo-semantic-release/monorepo/commit/6f8dbe6e759c8742ed1e45e40107e9c7a884a234))
+
 # [2.0.0](https://github.com/monorepo-semantic-release/monorepo/compare/v1.1.1...v2.0.0) (2021-03-10)
 
 
