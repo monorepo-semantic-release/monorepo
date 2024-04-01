@@ -7,6 +7,7 @@ const detectIndent = require('detect-indent');
 const detectNewline = require('detect-newline');
 const semver = require('semver');
 const execa = require('execa');
+const debug = require('debug')('semantic-release:monorepo');
 const MIN_RELEASE = '0.0.0-0';
 
 function encodeName(name) {
@@ -15,6 +16,17 @@ function encodeName(name) {
 
 function decodeName(name) {
   return name.substr(1);
+}
+
+/**
+ * Convert 0.9.1 to 0.9, 1.1.0 to 1
+ */
+function getMainVersion(version) {
+  if (version.substring(0, 1) === '0') {
+    return version.substring(0, 3);
+  } else {
+    return version.substring(0, 1);
+  }
 }
 
 const pkgConfigs = {
@@ -160,6 +172,35 @@ function updateComposerVersions(content, pkgContexts) {
   }
 };
 
+function updateComposerRequireCi(content, pkgContexts) {
+  if (!content.extra || !content.extra['require-ci']) {
+    return;
+  }
+
+  // Format like {"vendor/name": "user/repo as 0.9.x-dev"}
+  const requireCi = content.extra['require-ci'];
+  for (const name in requireCi) {
+    const value = requireCi[name];
+    const encodedName = encodeName(name);
+    if (!pkgContexts[encodedName] || !pkgContexts[encodedName].nextRelease) {
+      continue;
+    }
+
+    const nextVersion = pkgContexts[encodedName].nextRelease.version;
+    const nextMainVersion = getMainVersion(nextVersion);
+
+    // Format like "vendor/name as 0.9.x-dev"
+    const [githubName, version] = value.split(' as ');
+    const [mainVersion] = version.split('.x-dev');
+
+    debug('Compare require-ci version', nextVersion, value);
+    if (nextMainVersion > mainVersion) {
+      requireCi[name] = githubName + ' as ' + nextMainVersion + '.x-dev';
+      debug('Change require-ci to', name, requireCi[name]);
+    }
+  }
+}
+
 async function initPkgs(pluginConfig, context) {
   let pkgs = readPkgFiles(context, pkgConfigs);
   pkgs = updateDependencies(pkgs, pkgConfigs);
@@ -260,6 +301,7 @@ async function prepare(pluginConfig, context) {
     }
 
     updateComposerVersions(pkgFile.content, pkgContexts);
+    updateComposerRequireCi(pkgFile.content, pkgContexts);
   });
 
   // Update dependency versions
