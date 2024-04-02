@@ -1,3 +1,10 @@
+# [2.2.0](https://github.com/monorepo-semantic-release/monorepo/compare/v2.1.1...v2.2.0) (2024-04-02)
+
+
+### Features
+
+* support update "require-ci" versions in composer.json ([e9dfc6f](https://github.com/monorepo-semantic-release/monorepo/commit/e9dfc6fb9655e324f38324d6f0e908f728f659d7))
+
 ## [2.1.1](https://github.com/monorepo-semantic-release/monorepo/compare/v2.1.0...v2.1.1) (2022-04-16)
 
 
