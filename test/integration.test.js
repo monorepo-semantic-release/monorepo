@@ -788,7 +788,7 @@ test('Update composer.lock', async t => {
   t.deepEqual(logs.length, 1);
 });
 
-test('Update composer require-ci', async t => {
+async function requireCiMacro(t, lastVersion, lastAs, nextReleaseType, nextReleaseVersion, nextAs) {
   const cwd = tempy.directory();
 
   await outputFile(path.resolve(cwd, 'packages/base/package.json'), JSON.stringify({name: '@test/base'}));
@@ -803,11 +803,11 @@ test('Update composer require-ci', async t => {
   await outputFile(path.resolve(cwd, 'composer.json'), JSON.stringify({
     name: 'test/test',
     require: {
-      'test/base': '^1.0.0',
+      'test/base': '^' + lastVersion,
     },
     "extra": {
       "require-ci": {
-        "test/base": "github-test/base as 1.x-dev"
+        "test/base": "github-test/base as " + lastAs + "-dev"
       }
     }
   }));
@@ -828,9 +828,9 @@ test('Update composer require-ci', async t => {
   const pkgContexts = {
     '@test/base': {
       name: '@test/base',
-      nextReleaseType: 'major',
+      nextReleaseType: nextReleaseType,
       nextRelease: {
-        version: '2.0.0',
+        version: nextReleaseVersion,
       },
       pkg: {
         dependencies: [],
@@ -854,12 +854,20 @@ test('Update composer require-ci', async t => {
   t.deepEqual(await readJsonSync(path.resolve(cwd, 'composer.json')), {
     name: 'test/test',
     require: {
-      'test/base': '^2.0.0',
+      'test/base': '^' + nextReleaseVersion,
     },
     "extra": {
       "require-ci": {
-        "test/base": "github-test/base as 2.x-dev"
+        "test/base": "github-test/base as " + nextAs + "-dev"
       }
     }
   });
-});
+};
+
+requireCiMacro.title = (t, lastVersion, lastAs, nextReleaseType, nextReleaseVersion, nextAs) => `Next version ${nextReleaseVersion}, next as ${nextAs}`;
+
+test(requireCiMacro, '1.0.0', '1.x', 'major', '2.0.0', '2.x');
+test(requireCiMacro, '1.0.0', '1.x', 'minor', '1.1.0', '1.x');
+test(requireCiMacro, '1.0.0', '1.x', 'patch', '1.0.1', '1.x');
+test(requireCiMacro, '0.1.0', '0.1.x', 'major', '0.2.0', '0.2.x');
+test(requireCiMacro, '0.1.0', '0.1.x', 'minor', '0.1.1', '0.1.x');
