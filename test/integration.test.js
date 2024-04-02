@@ -787,3 +787,79 @@ test('Update composer.lock', async t => {
   await t.context.m.prepareAll(pluginConfig, context);
   t.deepEqual(logs.length, 1);
 });
+
+test('Update composer require-ci', async t => {
+  const cwd = tempy.directory();
+
+  await outputFile(path.resolve(cwd, 'packages/base/package.json'), JSON.stringify({name: '@test/base'}));
+  await outputFile(path.resolve(cwd, 'package.json'), JSON.stringify({
+    name: '@test/test',
+    dependencies: {
+      '@test/base': '^1.0.0',
+    },
+  }));
+
+  await outputFile(path.resolve(cwd, 'packages/base/composer.json'), JSON.stringify({name: 'test/base'}));
+  await outputFile(path.resolve(cwd, 'composer.json'), JSON.stringify({
+    name: 'test/test',
+    require: {
+      'test/base': '^1.0.0',
+    },
+    "extra": {
+      "require-ci": {
+        "test/base": "github-test/base as 1.x-dev"
+      }
+    }
+  }));
+
+  const pkgs = {
+    '@test/base': {
+      name: '@test/base',
+      path: 'packages/base',
+    },
+    '@test/test': {
+      name: '@test/test',
+      path: '.',
+    },
+  };
+
+  const initPkgs = await t.context.m.initPkgs({}, {cwd, pkgs});
+
+  const pkgContexts = {
+    '@test/base': {
+      name: '@test/base',
+      nextReleaseType: 'major',
+      nextRelease: {
+        version: '2.0.0',
+      },
+      pkg: {
+        dependencies: [],
+      },
+    },
+  };
+
+  await t.context.m.prepare({}, {
+    cwd,
+    logger: {
+      log: stub(),
+    },
+    pkg: initPkgs['@test/test'],
+    pkgContexts,
+    options: {},
+    nextRelease: {
+      version: '1.1.0',
+    },
+  });
+
+  t.deepEqual(await readJsonSync(path.resolve(cwd, 'composer.json')), {
+    name: 'test/test',
+    require: {
+      'test/base': '^2.0.0',
+    },
+    "extra": {
+      "require-ci": {
+        "test/base": "github-test/base as 2.x-dev"
+      }
+    }
+  });
+});
