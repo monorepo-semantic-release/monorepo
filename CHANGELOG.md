@@ -1,3 +1,10 @@
+## [2.2.1](https://github.com/monorepo-semantic-release/monorepo/compare/v2.2.0...v2.2.1) (2024-04-04)
+
+
+### Bug Fixes
+
+* update require-ci version support version greater than 9 ([0bd52f3](https://github.com/monorepo-semantic-release/monorepo/commit/0bd52f3c80c7ec21e87e28818e9fd354e22d2399))
+
 # [2.2.0](https://github.com/monorepo-semantic-release/monorepo/compare/v2.1.1...v2.2.0) (2024-04-02)
 
 
