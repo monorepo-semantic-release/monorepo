@@ -869,5 +869,6 @@ requireCiMacro.title = (t, lastVersion, lastAs, nextReleaseType, nextReleaseVers
 test(requireCiMacro, '1.0.0', '1.x', 'major', '2.0.0', '2.x');
 test(requireCiMacro, '1.0.0', '1.x', 'minor', '1.1.0', '1.x');
 test(requireCiMacro, '1.0.0', '1.x', 'patch', '1.0.1', '1.x');
+test(requireCiMacro, '10.0.0', '10.x', 'major', '11.0.0', '11.x');
 test(requireCiMacro, '0.1.0', '0.1.x', 'major', '0.2.0', '0.2.x');
 test(requireCiMacro, '0.1.0', '0.1.x', 'minor', '0.1.1', '0.1.x');

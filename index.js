@@ -19,13 +19,17 @@ function decodeName(name) {
 }
 
 /**
- * Convert 0.9.1 to 0.9, 1.1.0 to 1
+ * Convert
+ * - 0.9.1 to 0.9
+ * - 1.1.0 to 1
+ * - 10.1.0 to 10
  */
 function getMainVersion(version) {
-  if (version.substring(0, 1) === '0') {
-    return version.substring(0, 3);
+  const parts = version.split('.');
+  if (version.charAt(0) === '0') {
+    return parts.slice(0, 2).join('.');
   } else {
-    return version.substring(0, 1);
+    return parts.slice(0, 1).join('.');
   }
 }
 
