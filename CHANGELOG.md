@@ -1,3 +1,10 @@
+## [2.2.2](https://github.com/monorepo-semantic-release/monorepo/compare/v2.2.1...v2.2.2) (2024-05-31)
+
+
+### Bug Fixes
+
+* `0.10`(cast to 0.1) should greater than `0.9` ([eb492bf](https://github.com/monorepo-semantic-release/monorepo/commit/eb492bf84c33c8adfe641818676582e732570597))
+
 ## [2.2.1](https://github.com/monorepo-semantic-release/monorepo/compare/v2.2.0...v2.2.1) (2024-04-04)
 
 
