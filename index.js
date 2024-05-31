@@ -1,6 +1,6 @@
 const fs = require('fs');
 const path = require('path');
-const {uniq, forEach, keyBy, mapValues, template} = require('lodash');
+const { uniq, forEach, keyBy, mapValues, template } = require('lodash');
 const stringifyPackage = require('stringify-package');
 const toposort = require('toposort');
 const detectIndent = require('detect-indent');
@@ -55,7 +55,7 @@ const pkgConfigs = {
 };
 
 function readPkgFiles(context, pkgConfigs) {
-  const {cwd} = context;
+  const { cwd } = context;
 
   let pkgs = {};
   for (let [name, pkg] of Object.entries(context.pkgs)) {
@@ -120,7 +120,7 @@ function updateDependencies(pkgs, pkgConfigs) {
 
           found = true;
           graph.push([pkgs[name], pkg]);
-          pkg.dependencies.push({file, key, name});
+          pkg.dependencies.push({ file, key, name });
         });
       });
     });
@@ -153,14 +153,14 @@ function getReleaseType(config, nextReleaseType) {
 
 /**
  * Update package version that defined in "repositories" key
- * 
+ *
  * @link https://getcomposer.org/doc/05-repositories.md#path
  */
 function updateComposerVersions(content, pkgContexts) {
   if (!content.repositories) {
     return;
   }
-  
+
   for (const i in content.repositories) {
     const repository = content.repositories[i];
     if (!repository || !repository.options || !repository.options.versions) {
@@ -198,7 +198,7 @@ function updateComposerRequireCi(content, pkgContexts) {
     const [mainVersion] = version.split('.x-dev');
 
     debug('Compare require-ci version', nextVersion, value);
-    if (nextMainVersion > mainVersion) {
+    if (semver.gt(semver.coerce(nextMainVersion), semver.coerce(mainVersion))) {
       requireCi[name] = githubName + ' as ' + nextMainVersion + '.x-dev';
       debug('Change require-ci to', name, requireCi[name]);
     }
@@ -212,8 +212,8 @@ async function initPkgs(pluginConfig, context) {
 }
 
 async function analyzeCommitsAll(pluginConfig, context) {
-  const {releaseTypes, sameVersions = []} = pluginConfig;
-  const {pkgContexts} = context;
+  const { releaseTypes, sameVersions = [] } = pluginConfig;
+  const { pkgContexts } = context;
   const result = mapValues(pkgContexts, () => ({}));
 
   forEach(pkgContexts, (pkgContext) => {
@@ -223,7 +223,7 @@ async function analyzeCommitsAll(pluginConfig, context) {
     }
 
     // Update package version if dependency was updated
-    pkgContext.pkg.dependencies.forEach(({name}) => {
+    pkgContext.pkg.dependencies.forEach(({ name }) => {
       if (pkgContexts[name].nextReleaseType) {
         result[pkgContext.name].nextReleaseType = pkgContexts[pkgContext.name].nextReleaseType = getReleaseType(releaseTypes, pkgContexts[name].nextReleaseType);
         return false;
@@ -263,8 +263,8 @@ async function analyzeCommitsAll(pluginConfig, context) {
 }
 
 async function generateNotes(pluginConfig, context) {
-  const {sameVersions = []} = pluginConfig;
-  const {options, pkg, pkgContexts, commits, nextRelease} = context;
+  const { sameVersions = [] } = pluginConfig;
+  const { options, pkg, pkgContexts, commits, nextRelease } = context;
 
   let notes = [
     '### Dependencies',
@@ -272,7 +272,7 @@ async function generateNotes(pluginConfig, context) {
   ];
 
   const tpl = template(`* **\${name}:** upgrade\${lastRelease.version ? (' from \`' + lastRelease.version + '\`') : ''} to \`\${nextRelease.version}\``);
-  pkg.dependencies.forEach(({name}) => {
+  pkg.dependencies.forEach(({ name }) => {
     if (pkgContexts[name].nextRelease && pkgContexts[name].nextRelease.version) {
       notes.push(tpl({
         name,
@@ -296,7 +296,7 @@ async function generateNotes(pluginConfig, context) {
 }
 
 async function prepare(pluginConfig, context) {
-  const {cwd, logger, options, pkg, pkgContexts} = context;
+  const { cwd, logger, options, pkg, pkgContexts } = context;
 
   forEach(pkg.pkgFiles, pkgFile => {
     // Update self package version, such as package.json
@@ -309,8 +309,8 @@ async function prepare(pluginConfig, context) {
   });
 
   // Update dependency versions
-  pkg.dependencies.forEach(({file, key, name}) => {
-    const {content} = pkg.pkgFiles[file];
+  pkg.dependencies.forEach(({ file, key, name }) => {
+    const { content } = pkg.pkgFiles[file];
     if (pkgContexts[name].nextRelease && pkgContexts[name].nextRelease.version) {
       content[key][pkgConfigs[file].decodeName(name)] = '^' + pkgContexts[name].nextRelease.version;
     }
@@ -318,14 +318,14 @@ async function prepare(pluginConfig, context) {
 
   logger.log('Write package in %s with version %O', pkg.path, context.nextRelease.version);
   if (!options.dryRun) {
-    forEach(pkg.pkgFiles, ({content, indent, newline}, name) => {
+    forEach(pkg.pkgFiles, ({ content, indent, newline }, name) => {
       fs.writeFileSync(path.join(cwd, name), stringifyPackage(content, indent, newline));
     });
   }
 }
 
 async function prepareAll(pluginConfig, context) {
-  const {logger, pkgContexts} = context;
+  const { logger, pkgContexts } = context;
 
   const names = [];
   for (const name in pkgContexts) {
@@ -349,4 +349,4 @@ async function prepareAll(pluginConfig, context) {
   }
 }
 
-module.exports = {initPkgs, analyzeCommitsAll, generateNotes, prepare, prepareAll};
+module.exports = { initPkgs, analyzeCommitsAll, generateNotes, prepare, prepareAll };
